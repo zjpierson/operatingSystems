@@ -1,13 +1,14 @@
 \documentclass[10pt]{article}
+\usepackage{pdfpages}
 
-\title{\textbf{dash} \\Documentation}
+\title{\textbf{DASH} \\Documentation}
 \date{January 22, 2015}
 \author{Zachary Pierson}
 
 \begin{document}
 \maketitle
-\newpage
 
+\par\vspace{\fill}%push the table of contents to the bottom of the page
 \tableofcontents
 \newpage
 
@@ -18,14 +19,29 @@ the user to find information on certain processes.
 
 \subsection{Usage}
 \subparagraph{}
+This is a new Subsection of the Introduction
+
+\section{How To}
+\paragraph{}
+This paragraph will talk about everything you need to know
+
+\section{Another Section}
+\paragraph{}
+Another section we will talk about will include a lot of interesting and promising things about our talk.
+
+\subsection{Another Subsection}
+\subparagraph{}
+A SUB PARAGRAPH!
 
 \newpage
+\section{APPENDICES}
 \appendix
-\section{\\Title of Appendix A}
-\label{App:AppendixA}
-text of appendix a is here
+
+\subsection{Source Code}
+
+\subsection{Program Assignment}
+%\label{App:AppendixA}
+\includepdf[pages={1-4},frame={true}]{csc456_HW1.pdf}
 
 
-
-
-\end{document}}
+\end{document}
