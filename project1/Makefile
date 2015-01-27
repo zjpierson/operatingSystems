@@ -12,10 +12,13 @@
 #	g++ $(CFLAGS) $(LIBS) -o $@ $<
 
 CC = gcc
-CFLAGS = -g
+CFLAGS = -g 
 
-dash:	 dash.o cmdArgs.o
-	$(CC) $(CFLAGS) -o $@ $<
+dash:	 dash.c cmdArgs.c
+	$(CC) -o dash dash.c cmdArgs.c 
+
+test:	test.c cmdArgs.c
+	$(CC) -o $@ $< 
 
 
 clean:	

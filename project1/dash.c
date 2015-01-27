@@ -1,4 +1,6 @@
-#include "dash.h"
+//--------------    dash.c    ------------//
+
+#include "cmdArgs.h"
 
 
 int main()
@@ -33,3 +35,7 @@ int main()
 }
 
 
+//void hello(char* input)
+//{
+//    printf("You called the hello function\n");
+//}
