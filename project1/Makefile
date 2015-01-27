@@ -11,7 +11,16 @@
 #% : %.cpp
 #	g++ $(CFLAGS) $(LIBS) -o $@ $<
 
+CC = gcc
+CFLAGS = -g
+
+dash:	 dash.o cmdArgs.o
+	$(CC) $(CFLAGS) -o $@ $<
 
 
-dash : dash.c
-	gcc -o $@ $<
+clean:	
+	rm -f *.o core
+
+
+cleanall:
+	rm -f *.o dash core

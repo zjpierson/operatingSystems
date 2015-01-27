@@ -1,6 +1,5 @@
 #include "dash.h"
 
-const char commands[NUM_CMDS][LEN_CMD] = {"quit", "hello", "help"};
 
 int main()
 {
@@ -20,12 +19,17 @@ int main()
 
         for(i = 0; i < NUM_CMDS; i++)
         {
-//            if(!strcmp(cmd, commands[i]))
-//            {
-//                printf("%s is a command!\n", cmd);
-//            }
+            if(!strcmp(cmd, commands[i]))
+            {
+                //Call appropriate function
+                hello(input);
+                printf("%s is a command!\n", cmd);
+                break;
+            }
         }
     }
 
     return 0;
 }
+
+
