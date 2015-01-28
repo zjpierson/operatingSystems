@@ -24,8 +24,7 @@ int main()
             if(!strcmp(cmd, commands[i]))
             {
                 //Call appropriate function
-                hello(input);
-                printf("%s is a command!\n", cmd);
+                (*func[i]) (input);
                 break;
             }
         }

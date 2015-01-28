@@ -11,6 +11,7 @@
 #define LEN_CMD 100
 
 extern const char commands[NUM_CMDS][LEN_CMD];
+extern void (*func[NUM_CMDS]) (char* input);
 
 void quit(char* input);
 void hello(char* input);

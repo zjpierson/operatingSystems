@@ -24,6 +24,5 @@ test:	test.c cmdArgs.c
 clean:	
 	rm -f *.o core
 
-
 cleanall:
 	rm -f *.o dash core
