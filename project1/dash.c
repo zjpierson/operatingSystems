@@ -6,35 +6,53 @@
 int main()
 {
     int i;
-    char* input;
+    char input[60] = {0};
     char* cmd;
-
-    printf("\n");
+ 
     //Enter command loop (Read Eval Print Loop)
     while(1)
     {
-        printf("dash> ");
-        scanf("%s", input);
-        
-        //Get command option from user
-        cmd = strtok(input, " ");
 
+    /************************************************
+     *  BUG:                                        *
+     *  dash> <tab> <enter> Segmentation Faults     *
+     *                                              *
+     ***********************************************/
+
+        //Print prompt and get user input
+        printf("dash> ");
+        fgets(input, 60, stdin);  //Note: fgets includes \n
+
+        //If empty string, print prompt again
+        if( !strcmp(input, "\n") )
+            continue;
+
+        //Extract command from user
+        //fgets includes \n character so we need to make it a delimiter
+        cmd = strtok(input, " \n\t");
+
+        //Loop though and call the function that was typed in.
         for(i = 0; i < NUM_CMDS; i++)
         {
             if(!strcmp(cmd, commands[i]))
             {
+                //Store the next command in cmd
+                cmd = strtok(NULL, "\n");
+                
                 //Call appropriate function
-                (*func[i]) (input);
+                (*func[i]) (cmd);
                 break;
             }
         }
+
+        //If command does not exist; tell the user
+        if(i == NUM_CMDS)
+            printf("**Error: \"%s\" is not a command. Try \"help\"", input);
+
+        printf("\n");
     }
 
     return 0;
 }
 
 
-//void hello(char* input)
-//{
-//    printf("You called the hello function\n");
-//}
