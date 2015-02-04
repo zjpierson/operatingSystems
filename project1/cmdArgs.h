@@ -6,8 +6,9 @@
 #include <stdio.h>
 #include <string.h>     //strtok
 #include <stdlib.h>     //exit
+#include <dirent.h>     //DIR, opendir(), readdir(), closedir()
 
-#define NUM_CMDS 5
+#define NUM_CMDS 6
 #define LEN_CMD 100
 
 extern const char commands[NUM_CMDS][LEN_CMD];
