@@ -12,13 +12,6 @@ int main()
     //Enter command loop (Read Eval Print Loop)
     while(1)
     {
-
-    /************************************************
-     *  BUG:                                        *
-     *  dash> <tab> <enter> Segmentation Faults     *
-     *                                              *
-     ***********************************************/
-
         //Print prompt and get user input
         printf("dash> ");
         fgets(input, 60, stdin);  //Note: fgets includes \n
@@ -30,6 +23,8 @@ int main()
         //Extract command from user
         //fgets includes \n character so we need to make it a delimiter
         cmd = strtok(input, " \n\t");
+        if( cmd == NULL )
+            continue;
 
         //Loop though and call the function that was typed in.
         for(i = 0; i < NUM_CMDS; i++)

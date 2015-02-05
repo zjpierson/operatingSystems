@@ -23,8 +23,8 @@ void quit(char* input)
 void cmdnm(char* input)
 {
     char path[50] = {"/proc/"};
-    char *pid;
     char cmdname[50];
+    char *pid = NULL;
     FILE *fp = NULL; 
 
     //Get the next command
@@ -71,8 +71,21 @@ void cmdnm(char* input)
 void pid(char* input)
 {
     DIR * dir;
-    DIR * tmpdir;
+    FILE * fp;
+    char * cmd = NULL;
+    char path[50];
+    char cmdname[50];
+    char file[50];
     struct dirent *ent;
+
+    //Get the next command
+    cmd = strtok(input, " \t");
+    if(cmd == NULL)
+    {
+        printf("*Error: must specify a command name (dash>  pid  <cmd>)");
+        return;
+    }
+
     if( (dir = opendir("/proc")) == NULL )
     {
         printf("**Error: could not open /proc directory");
@@ -82,32 +95,18 @@ void pid(char* input)
     //find all pids that match any substring of the given command
     while( (ent = readdir(dir)) != NULL )
     {
-        printf("%s\n", ent->d_name);
-        char path[50] = {"/proc/"};
-        char *pid;
-        char cmdname[50];
-        FILE *fp = NULL; 
+        strcpy(path, "/proc/");
+        strcpy(file, ent->d_name);
 
-        //Get the next command
-        pid = strtok(input, " \t");
-        if(pid == NULL)
-        {
-            printf("*Error: must specify a pid (dash>  cmdnm  <pid>)");
-            return;
-        }
+        //if file is not a pid, continue
+        if(strspn(file, "1234567890") != strlen(file))
+            continue;
 
-        //add pid to the file path: "/proc/<pid>"
-        strcat(path, pid);
-
-        /************************************************
-         *  NOTE:                                       *
-         *  full path name can be found in cmdline      *
-         *                                              *
-         ***********************************************/
-        //add the comm file to the path:"/proc/<pid>"
+        //create path to /proc/<pid>/comm
+        strcat(path, file);
         strcat(path, "/comm");
 
-        //open the file
+        //open /proc/<pid>/comm
         fp = fopen(path, "r");
         if( fp == NULL )
         {
@@ -115,10 +114,18 @@ void pid(char* input)
             return;
         }
 
+        //if the input is a substring of the value in the comm file:
+        //return pid with command name
+
         //the command name is the first thing inside the comm file
         fscanf(fp, "%s", cmdname);
+
+        //if no match, continue though the loop
+        if( strstr(cmdname, cmd) == NULL )
+            continue;
+
         //print the command name that belongs to <pid>
-        printf("%s", cmdname);
+        printf("PID:  %s  %s\n", file, cmdname);
 
         fclose(fp);
     }
