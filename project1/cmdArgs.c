@@ -125,20 +125,95 @@ void pid(char* input)
             continue;
 
         //print the command name that belongs to <pid>
-        printf("PID:  %s  %s\n", file, cmdname);
+        printf("PID:  %-7s%-s\n", file, cmdname);
 
         fclose(fp);
     }
 
     closedir(dir);
-
 }
 
 
 
+//Print to stdout:
+//  Linux Version information
+//  System uptime
+//memory usage information:
+//  memtotal
+//  memfree
+//CPU information:
+//  vendor id though cache size
 void systat(char* input)
 {
-    printf("You called the systat function\n");
+    char linuxVersion[30] = {"/proc/version"};
+    char systemUptime[30] = {"/proc/uptime"};
+    char memInfo[30] = {"/proc/meminfo"};
+    char cpuInfo[30] = {"/proc/cpuinfo"};
+    FILE *fp = NULL; 
+
+//--open linux version file
+    fp = fopen(linuxVersion, "r");
+    if( fp == NULL )
+    {
+        printf("*Error: invalid <pid>");
+        return;
+    }
+
+    //get linux version information and print to terminal
+    
+
+    //close file and set pointer back to NULL
+
+
+//--open systemUptime file
+    fp = fopen(linuxVersion, "r");
+    if( fp == NULL )
+    {
+        printf("*Error: invalid <pid>");
+        return;
+    }
+
+    //get linux version information and print to terminal
+    
+
+    //close file and set pointer back to NULL
+
+
+    //open linux version file
+    fp = fopen(linuxVersion, "r");
+    if( fp == NULL )
+    {
+        printf("*Error: invalid <pid>");
+        return;
+    }
+
+    //get linux version information and print to terminal
+    
+
+    //close file and set pointer back to NULL
+
+
+    //open linux version file
+    fp = fopen(linuxVersion, "r");
+    if( fp == NULL )
+    {
+        printf("*Error: invalid <pid>");
+        return;
+    }
+
+    //get linux version information and print to terminal
+    
+
+    //close file and set pointer back to NULL
+
+
+
+    //the command name is the first thing inside the comm file
+    fscanf(fp, "%s", cmdname);
+    //print the command name that belongs to <pid>
+    printf("%s", cmdname);
+
+    fclose(fp);
 }
 
 void help(char* input)
