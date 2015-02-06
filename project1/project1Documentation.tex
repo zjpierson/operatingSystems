@@ -2,6 +2,9 @@
 \usepackage{pdfpages}
 \usepackage{enumitem}
 \usepackage{multirow}
+\usepackage[latin1]{inputenc}
+\usepackage{tikz}
+\usetikzlibrary{shapes, arrows}
 
 \title{\textbf{DASH} \\Documentation}
 \date{January 22, 2015}
@@ -181,13 +184,56 @@ The program is broken up into 3 separate files: dash.c, cmdArgs.c, and cmdArgs.h
 As briefly mentioned in Section \ref{subsection:structure}, there is an array of function pointers used in the event loop to call the appropriate function. For modularity sake, the \texttt{\#define NUM\_CMDS} is used to keep track of the number of commands the user can enter. To add another command, one would simply increase \texttt{NUM\_CMDS} and add the function to both the \texttt{commands} array and the \texttt{func} array. Obviously the function would need to be declared in cmdArgs.h and defined in cmdArgs.c as well.
 
 \subsection{Event Loop}
+\label{section:eventLoop}
 \subparagraph{}
-As stated before in both Sections \ref{subsection:structure} \& \ref{section:algorithms}, the event loop makes use of function pointers to call the appropriate method. 
+As stated before in both Sections \ref{subsection:structure} \& \ref{section:algorithms}, the event loop makes use of function pointers to call the appropriate method. The \texttt{main()} function in dash.c contains and handles the event loop.
 
+% Define block styles
+\tikzstyle{decision} = [diamond, draw, fill=blue!20, 
+    text width=4.5em, text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, 
+    text width=5em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{cloud} = [draw, ellipse,fill=red!20, node distance=3cm,
+    minimum height=2em]
+
+\begin{center} 
+\begin{figure}
+\begin{tikzpicture}[node distance = 2cm, auto]
+	\node[cloud](start){Start};
+	\node[block, right of = start, node distance=3cm](while){Enter \texttt{while(1)} loop};
+	\node[block, right of = while, node distance=3cm](prompt){Display \texttt{dash>} prompt};
+	\node[decision, below of = while, text width=7em](validInput){Input only contains white space};
+	\node[block, left of = validInput, node distance=4cm, text width=7em](extract){extract the first word (cmd) using \texttt{strtok()}};
+	\node[block, below of = extract, text width=7em, node distance=4cm](commandLoop){Loop though all valid commands};
+	\node[decision, right of = commandLoop, text width = 8em, node distance=4cm](cmp){\texttt{cmd$=$command[i]}?};
+	\node[block, right of = cmp, node distance=4.5cm, text width=10em](call){Call function:\\ \texttt{(*func[i])(input)} };
+	\node[block, below of = commandLoop](increment){increment \texttt{i}};
+	
+	\path[line](start)--(while);
+	\path[line](while)--(prompt);
+	\path[line](prompt)--(validInput);
+	\path[line](validInput)-| node[near start] {Yes}(prompt);
+	\path[line](validInput)-- node[near start] {No}(extract);
+	\path[line](extract)--(commandLoop);
+	\path[line](commandLoop)--(cmp);
+	\path[line](cmp)-- node[near start] {Yes}(call);
+	\path[line](cmp)|- node[near start] {No}(increment);
+	\path[line](increment)--(commandLoop);
+	
+	
+\end{tikzpicture}
+\vspace{5mm}
+\centering
+\caption{Event Loop}
+\label{figure:main}
+\end{figure}
+\end{center}
 
 \subsection{Functions}
 \subparagraph{}
 This is a new Subsection of the Introduction
+
 
 \subsubsection{cmdnm}
 \subparagraph{}
