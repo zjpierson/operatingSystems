@@ -19,5 +19,7 @@ void cmdnm(char* input);
 void pid(char* input);
 void systat(char* input);
 void help(char* input);
+void display_cmdNames();
+void display_pid();
 
 #endif
