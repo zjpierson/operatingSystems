@@ -15,7 +15,7 @@ CC = gcc
 CFLAGS = -g 
 
 dash:	 dash.c cmdArgs.c
-	$(CC) -o dash dash.c cmdArgs.c 
+	$(CC) -g -o dash dash.c cmdArgs.c 
 
 test:	test.c cmdArgs.c
 	$(CC) -o $@ $< 

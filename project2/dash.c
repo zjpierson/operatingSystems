@@ -5,10 +5,14 @@
 
 int main()
 {
-    int i;
     char input[100] = {0};
     char* cmd;
-    int args = 0;
+    char* args[10];
+    int numArgs = 0;
+    int i;
+    int childpid;
+    int waitpid;
+    int status;
  
     //Enter command loop (Read Eval Print Loop)
     while(1)
@@ -41,13 +45,40 @@ int main()
             }
         }
 
+
         //If not a recognized command, pass arguments to execvp()
         if(i == NUM_CMDS)
         {
-            for(args = 0; strtok(NULL, " "); args++)
+            //store all arguments from the command line into cmdArgs
+            while( cmd != NULL )
             {
-            
+                args[numArgs] = cmd;
+                cmd = strtok(NULL, " \n\t");
+                numArgs++;
             }
+
+            args[numArgs] = NULL;
+
+//            printf("the arguments are: \n");
+//            for( i = 0; i < numArgs; i++ )
+//                printf("%s ", args[i]);
+
+            //fork a new process
+            childpid = fork();
+
+            //child process should call the execvp command
+            if( childpid == 0 )
+            {
+                execvp(args[0], args);
+                perror("Exec failed");
+                exit(2);
+            }
+
+            //wait for child process to finish
+            waitpid = wait(&status);
+            printf("Shell process %d exited with status %d", waitpid, (status >> 8)); 
+
+            numArgs = 0;
         }
 
         printf("\n");

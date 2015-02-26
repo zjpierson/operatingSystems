@@ -4,12 +4,13 @@
 #define __CMDARGS_h__
 
 #include <stdio.h>
-#include <string.h>     //strtok
+#include <string.h>     //strtok(), strcpy()
 #include <stdlib.h>     //exit
 #include <dirent.h>     //DIR, opendir(), readdir(), closedir()
 #include <sys/time.h>       //getrusgae()
 #include <sys/resource.h>   //getrusgae()
 #include <unistd.h>         //fork(), execvp()
+#include <errno.h>          //errno
 
 #define NUM_CMDS 6
 #define LEN_CMD 100
