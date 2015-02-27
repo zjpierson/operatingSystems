@@ -2,15 +2,12 @@
 #include "cmdArgs.h"
 
 
-void (*func[NUM_CMDS]) (char* input) = {quit, quit, cmdnm, pid, systat, help};
+void (*func[NUM_CMDS]) (char* input) = {quit, quit, cmdnm, pid, systat, help,
+    cd};
 const char commands[NUM_CMDS][LEN_CMD] = 
 {
-    "quit", 
-    "exit", 
-    "cmdnm", 
-    "pid", 
-    "systat", 
-    "help"
+    "quit", "exit", "cmdnm", "pid", "systat", "help",
+    "cd"
 };
 
 void quit(char* input)
@@ -332,4 +329,27 @@ void help(char* input)
     printf("\n\tcmdnm  <pid>\t - return name of a given process id");
     printf("\n\tpid  <command>\t - return pid of a given command");
     printf("\n\tsystat\t\t - print process information\n");
+}
+
+void proc_status()
+{
+    struct rusage usage;
+    double t = 0;
+
+    getrusage(RUSAGE_CHILDREN, &usage);
+    printf("User time:   %ld.", usage.ru_utime.tv_sec);
+    printf("%06ld\n", usage.ru_utime.tv_usec);
+    printf("System time:   %ld.", usage.ru_stime.tv_sec);
+    printf("%06ld\n", usage.ru_stime.tv_usec);
+    printf("Faults (hard): %ld\n", usage.ru_majflt);
+    printf("Faults (soft): %ld\n", usage.ru_minflt);
+    printf("Swaps: %ld\n", usage.ru_nswap);
+
+}
+
+void cd(char* input)
+{
+    //if unsuccessful, print error and return 
+    if(chdir(input)) 
+        printf("Error cd: %s- No such file or directory", input);
 }

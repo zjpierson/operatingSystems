@@ -9,10 +9,10 @@
 #include <dirent.h>     //DIR, opendir(), readdir(), closedir()
 #include <sys/time.h>       //getrusgae()
 #include <sys/resource.h>   //getrusgae()
-#include <unistd.h>         //fork(), execvp()
+#include <unistd.h>         //fork(), execvp(), chdir()
 #include <errno.h>          //errno
 
-#define NUM_CMDS 6
+#define NUM_CMDS 7
 #define LEN_CMD 100
 
 extern const char commands[NUM_CMDS][LEN_CMD];
@@ -25,5 +25,7 @@ void systat(char* input);
 void help(char* input);
 void display_cmdNames();
 void display_pid();
+void proc_status();
+void cd(char* input);
 
 #endif

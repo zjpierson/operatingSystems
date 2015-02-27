@@ -49,7 +49,7 @@ int main()
         //If not a recognized command, pass arguments to execvp()
         if(i == NUM_CMDS)
         {
-            //store all arguments from the command line into cmdArgs
+            //store all arguments from the command line into args
             while( cmd != NULL )
             {
                 args[numArgs] = cmd;
@@ -76,8 +76,13 @@ int main()
 
             //wait for child process to finish
             waitpid = wait(&status);
-            printf("Shell process %d exited with status %d", waitpid, (status >> 8)); 
+            printf("\nChild process %d exited with status %d\n",
+                    waitpid, (status >> 8)); 
 
+            //print process status information
+            proc_status();
+
+            //reset numArgs
             numArgs = 0;
         }
 
