@@ -16,17 +16,19 @@
 #define LEN_CMD 100
 
 extern const char commands[NUM_CMDS][LEN_CMD];
-extern void (*func[NUM_CMDS]) (char* input);
+extern void (*func[NUM_CMDS]) (char* args[]);
 
-void quit(char* input);
-void cmdnm(char* input);
-void pid(char* input);
-void systat(char* input);
-void help(char* input);
+void quit(char* args[]);
+void cmdnm(char* args[]);
+void pid(char* args[]);
+void systat(char* args[]);
+void help(char* args[]);
+void cd(char* args[]);
 void display_cmdNames();
 void display_pid();
 void proc_status();
-void cd(char* input);
 void redirected_output(char *args[], char* fileName);
+void call(char *args[], int size);
+int tokenize(char* input, char* args[]);
 
 #endif

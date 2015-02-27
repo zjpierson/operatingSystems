@@ -26,69 +26,36 @@ int main()
         if( !strcmp(input, "\n") )
             continue;
 
-        //Extract command from user
-        //fgets includes \n character so we need to make it a delimiter
-        cmd = strtok(input, " \n\t");
-        if( cmd == NULL )
+        //tokenize the input
+        numArgs = tokenize(input, args);
+
+        //if no user input, then continue the prompt
+        if( numArgs == -1)
             continue;
 
-        //Loop though and call the function that was typed in.
-        for(i = 0; i < NUM_CMDS; i++)
+        //fork a new process
+        childpid = fork();
+
+        //child process should call the execvp command
+        if( childpid == 0 )
         {
-            if(!strcmp(cmd, commands[i]))
-            {
-                //Store the next command in cmd
-                cmd = strtok(NULL, "\n");
-                
-                //Call appropriate function
-                (*func[i]) (cmd);
-                break;
-            }
+            call(args, numArgs);
+            perror("Exec failed");
+            exit(2);
         }
 
+        //wait for child process to finish
+        waitpid = wait(&status);
 
-        //If not a recognized command, pass arguments to execvp()
-        if(i == NUM_CMDS)
-        {
-            //store all arguments from the command line into args
-            while( cmd != NULL )
-            {
-                args[numArgs] = cmd;
-                cmd = strtok(NULL, " \n\t");
-                numArgs++;
-            }
+        //exit command was called
+        if( (status>>8) == (unsigned char)-1 )
+            exit(0);
 
-            args[numArgs] = NULL;
+        printf("\nChild process %d exited with status %d\n",
+                waitpid, (status >> 8)); 
 
-            printf("\ninput: %s\n", input);
-//            ptr = strchr()
-
-//            printf("the arguments are: \n");
-//            for( i = 0; i < numArgs; i++ )
-//                printf("%s ", args[i]);
-
-            //fork a new process
-            childpid = fork();
-
-            //child process should call the execvp command
-            if( childpid == 0 )
-            {
-                execvp(args[0], args);
-                perror("Exec failed");
-                exit(2);
-            }
-
-            //wait for child process to finish
-            waitpid = wait(&status);
-            printf("\nChild process %d exited with status %d\n",
-                    waitpid, (status >> 8)); 
-
-            //print process status information
-            proc_status();
-
-            //reset numArgs
-            numArgs = 0;
-        }
+        //print process status information
+        proc_status();
 
         printf("\n");
     }

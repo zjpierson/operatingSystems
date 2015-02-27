@@ -2,7 +2,7 @@
 #include "cmdArgs.h"
 
 
-void (*func[NUM_CMDS]) (char* input) = {quit, quit, cmdnm, pid, systat, help,
+void (*func[NUM_CMDS]) (char* args[]) = {quit, quit, cmdnm, pid, systat, help,
     cd};
 const char commands[NUM_CMDS][LEN_CMD] = 
 {
@@ -10,23 +10,20 @@ const char commands[NUM_CMDS][LEN_CMD] =
     "cd"
 };
 
-void quit(char* input)
+void quit(char* args[])
 {
     printf("Now exiting...\n");
-    exit(0);
+    exit(-1);
 }
 
 
-void cmdnm(char* input)
+void cmdnm(char* args[])
 {
     char path[50] = {"/proc/"};
     char cmdname[50];
-    char *pid = NULL;
     FILE *fp = NULL; 
 
-    //Get the next command
-    pid = strtok(input, " \t");
-    if(pid == NULL)
+    if(args[1] == NULL)
     {
         printf("Please specify pid. Here is a list of all cmd names:\n");
         display_cmdNames();
@@ -34,7 +31,7 @@ void cmdnm(char* input)
     }
 
     //add pid to the file path: "/proc/<pid>"
-    strcat(path, pid);
+    strcat(path, args[1]);
 
     //add the comm file to the path:"/proc/<pid>"
     strcat(path, "/comm");
@@ -116,20 +113,17 @@ void display_cmdNames()
 //finding all sub directories using dirent.h should be given credit to:
 //http://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
 //
-void pid(char* input)
+void pid(char* args[])
 {
     DIR * dir;
     FILE * fp;
-    char * cmd = NULL;
     char path[50];
     char cmdname[50];
     char file[50];
     struct dirent *ent;
 
 
-    //Get the next command
-    cmd = strtok(input, " \t");
-    if(cmd == NULL)
+    if(args[1] == NULL)
     {
         printf("Please specify cmd name. Here is a list of all pid's:\n");
         display_pid();
@@ -172,7 +166,7 @@ void pid(char* input)
         fscanf(fp, "%s", cmdname);
 
         //if no match, continue though the loop
-        if( strstr(cmdname, cmd) == NULL )
+        if( strstr(cmdname, args[1]) == NULL )
             continue;
 
         //print the command name that belongs to <pid>
@@ -227,7 +221,7 @@ void display_pid()
 //  memfree
 //CPU information:
 //  vendor id though cache size
-void systat(char* input)
+void systat(char* args[])
 {
     char linuxVersion[30] = {"/proc/version"};
     char systemUptime[30] = {"/proc/uptime"};
@@ -323,7 +317,7 @@ void systat(char* input)
 //    fclose(fp);
 }
 
-void help(char* input)
+void help(char* args[])
 {
     printf("Usage Options:");
     printf("\n\tcmdnm  <pid>\t - return name of a given process id");
@@ -347,11 +341,11 @@ void proc_status()
 
 }
 
-void cd(char* input)
+void cd(char* args[])
 {
     //if unsuccessful, print error and return 
-    if(chdir(input)) 
-        printf("Error cd: %s- No such file or directory", input);
+    if(chdir(args[1])) 
+        printf("Error cd: %s- No such file or directory", args[1]);
 }
 
 
@@ -379,4 +373,54 @@ void redirected_output(char *args[], char* fileName)
     printf("\nChild process %d exited with status %d\n",
             pid, (status >> 8)); 
 
+}
+
+
+void call(char *args[], int size)
+{
+    int i;
+
+    //Loop though and call the function that was typed in.
+    for(i = 0; i < NUM_CMDS; i++)
+    {
+        //check for matches with current commands
+        if(!strcmp(args[0], commands[i]))   //match found
+        {
+            //Call appropriate function
+            (*func[i]) (args);
+            break;
+        }
+    }
+    //exit properly if command succesfull
+    if ( i != NUM_CMDS)
+        exit(0);
+
+    //pass arguments to a system call
+    execvp(args[0], args);
+}
+
+
+int tokenize(char* input, char* args[])
+{
+    int numArgs = 0;
+    char* tok = NULL;
+
+    tok = strtok(input, " \n\t");
+    if( tok == NULL )
+        return -1;
+
+    while( tok != NULL )
+    {
+        args[numArgs] = tok;
+        tok = strtok(NULL, " \n\t");
+        numArgs++;
+    }
+
+    args[numArgs] = NULL;
+
+//    printf("the arguments are: \n");
+//    for( i = 0; i < numArgs; i++ )
+//        printf("%s ", args[i]);
+
+    return numArgs;
 }
