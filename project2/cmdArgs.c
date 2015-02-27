@@ -353,3 +353,30 @@ void cd(char* input)
     if(chdir(input)) 
         printf("Error cd: %s- No such file or directory", input);
 }
+
+
+void redirected_output(char *args[], char* fileName)
+{
+    int fd;
+    int pid;
+    int status;
+
+    if( fork() == 0 )   //Child Process
+    {
+        //check if succesfully created file discriptor for reading
+        if( (fd = creat(fileName, 0644)) == -1)
+            printf("Error: could not open %s for writting\n", fileName);
+
+        //redirect standard output to the file descriptor
+        dup2(fd, 1);
+        
+        //call the appropriate function
+        execvp(args[0], args);
+    }
+    
+    //wait for child process to finish
+    pid = wait(&status);
+    printf("\nChild process %d exited with status %d\n",
+            pid, (status >> 8)); 
+
+}

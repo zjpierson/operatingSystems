@@ -7,6 +7,7 @@ int main()
 {
     char input[100] = {0};
     char* cmd;
+    char* ptr;
     char* args[10];
     int numArgs = 0;
     int i;
@@ -58,6 +59,9 @@ int main()
             }
 
             args[numArgs] = NULL;
+
+            printf("\ninput: %s\n", input);
+//            ptr = strchr()
 
 //            printf("the arguments are: \n");
 //            for( i = 0; i < numArgs; i++ )

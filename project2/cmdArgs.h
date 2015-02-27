@@ -27,5 +27,6 @@ void display_cmdNames();
 void display_pid();
 void proc_status();
 void cd(char* input);
+void redirected_output(char *args[], char* fileName);
 
 #endif
