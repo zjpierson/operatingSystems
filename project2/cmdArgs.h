@@ -27,8 +27,9 @@ void cd(char* args[]);
 void display_cmdNames();
 void display_pid();
 void proc_status();
+int redirect_pipe(char* args[]);
 void redirected_output(char *args[], char* fileName);
-void call(char *args[], int size);
+void call(char *args[]);
 int tokenize(char* input, char* args[]);
 
 #endif

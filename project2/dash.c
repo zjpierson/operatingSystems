@@ -33,13 +33,25 @@ int main()
         if( numArgs == -1)
             continue;
 
+        //if a pipe or redirect is required, do
+        //computation and continue to prompt
+        if(!redirect_pipe(args))
+            continue;
+
+        //special case cd command to actually take affect
+        if(!strcmp(args[0], "cd"))
+        {
+            cd(args);
+            continue;
+        }
+
         //fork a new process
         childpid = fork();
 
         //child process should call the execvp command
         if( childpid == 0 )
         {
-            call(args, numArgs);
+            call(args);
             perror("Exec failed");
             exit(2);
         }

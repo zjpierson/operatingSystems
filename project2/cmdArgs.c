@@ -348,6 +348,22 @@ void cd(char* args[])
         printf("Error cd: %s- No such file or directory", args[1]);
 }
 
+int redirect_pipe(char* args[])
+{
+    int i;
+
+    for( i = 0; args[i] != NULL; i++ )
+    {
+        if(!strcmp(args[i], ">"))
+        {
+            args[i] = NULL;
+            redirected_output(args, args[i+1]);
+            return 0;
+        }
+    }
+    
+    return 1;
+}
 
 void redirected_output(char *args[], char* fileName)
 {
@@ -365,7 +381,7 @@ void redirected_output(char *args[], char* fileName)
         dup2(fd, 1);
         
         //call the appropriate function
-        execvp(args[0], args);
+        call(args);
     }
     
     //wait for child process to finish
@@ -376,7 +392,7 @@ void redirected_output(char *args[], char* fileName)
 }
 
 
-void call(char *args[], int size)
+void call(char *args[])
 {
     int i;
 
