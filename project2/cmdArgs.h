@@ -11,8 +11,9 @@
 #include <sys/resource.h>   //getrusgae()
 #include <unistd.h>         //fork(), execvp(), chdir()
 #include <errno.h>          //errno
+#include <fcntl.h>          //O_RDONLY
 
-#define NUM_CMDS 7
+#define NUM_CMDS 8
 #define LEN_CMD 100
 
 extern const char commands[NUM_CMDS][LEN_CMD];
@@ -28,7 +29,10 @@ void display_cmdNames();
 void display_pid();
 void proc_status();
 int redirect_pipe(char* args[]);
+void redirected_input(char *args[], char* fileName);
 void redirected_output(char *args[], char* fileName);
+void do_pipe(char* args[], int index);
+void send_signal(char* args[]);
 void call(char *args[]);
 int tokenize(char* input, char* args[]);
 

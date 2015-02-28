@@ -3,11 +3,11 @@
 
 
 void (*func[NUM_CMDS]) (char* args[]) = {quit, quit, cmdnm, pid, systat, help,
-    cd};
+    cd, send_signal};
 const char commands[NUM_CMDS][LEN_CMD] = 
 {
     "quit", "exit", "cmdnm", "pid", "systat", "help",
-    "cd"
+    "cd", "signal"
 };
 
 void quit(char* args[])
@@ -354,13 +354,34 @@ int redirect_pipe(char* args[])
 
     for( i = 0; args[i] != NULL; i++ )
     {
+        //redirected output
         if(!strcmp(args[i], ">"))
         {
             args[i] = NULL;
             redirected_output(args, args[i+1]);
+            proc_status();
+            return 0;
+        }
+
+        //redirected input
+        if(!strcmp(args[i], "<"))
+        {
+            args[i] = NULL;
+            redirected_input(args, args[i+1]);
+            proc_status();
+            return 0;
+        }
+
+        //Pipes
+        if(!strcmp(args[i], "|"))
+        {
+            args[i] = NULL;
+            do_pipe(args, i);
+            proc_status();
             return 0;
         }
     }
+
     
     return 1;
 }
@@ -391,6 +412,68 @@ void redirected_output(char *args[], char* fileName)
 
 }
 
+void redirected_input(char *args[], char* fileName)
+{
+    int fd;
+    int pid;
+    int status;
+
+    if( fork() == 0 )   //Child Process
+    {
+        //check if succesfully created file discriptor for reading
+        if( (fd = open(fileName, O_RDONLY)) == -1)
+            printf("Error: could not open %s for reading\n", fileName);
+
+        //redirect standard output to the file descriptor
+        dup2(fd, 0);
+        
+        //call the appropriate function
+        call(args);
+    }
+    
+    //wait for child process to finish
+    pid = wait(&status);
+    printf("\nChild process %d exited with status %d\n",
+            pid, (status >> 8)); 
+
+}
+
+void do_pipe(char* args[], int index)
+{
+    int fd[2];
+    int pid;
+    int status;
+    char** cmd = &args[index+1];
+
+    //child process
+    if( fork() == 0)
+    {
+        //create the pipe
+        pipe(fd);
+
+        //output side of pipe (grand child process)
+        if( fork() == 0 )
+        {
+            dup2(fd[1], 1);     //redirect output
+            close(fd[0]);       //close read end
+            call(args);
+            exit(2);
+        }
+
+        //input side of pipe (child process)
+        dup2(fd[0], 0);     //redirect the input
+        close(fd[1]);       //close write end
+        call(cmd);
+        exit(2);
+    }
+
+    //wait for child process to finish
+    pid = wait(&status);
+    printf("\nChild process %d exited with status %d\n",
+            pid, (status >> 8)); 
+
+}
+
 
 void call(char *args[])
 {
@@ -411,8 +494,12 @@ void call(char *args[])
     if ( i != NUM_CMDS)
         exit(0);
 
+    printf("%s: Comand failed to be recognized", args[0]);
+
     //pass arguments to a system call
     execvp(args[0], args);
+    //exec failed to terminate properly
+    exit(1);
 }
 
 
@@ -439,4 +526,38 @@ int tokenize(char* input, char* args[])
 //        printf("%s ", args[i]);
 
     return numArgs;
+}
+
+//send signal is a wrapper function for the system kill command
+void send_signal(char* args[])
+{
+    int pid;
+    int status;
+    int i;
+    char* cmd[10];
+    
+    //set up the command for sending a signal
+    //to a process using the kill command
+    cmd[0] = "kill";
+    cmd[1] = "-s";
+
+    for(i = 1; args[i] != NULL; i++)
+        cmd[i+1] = args[i];
+
+    for(i = 0; cmd[i] != NULL; i++)
+        printf("%s\n", cmd[i]);
+
+//    //child process
+//    if( fork() == 0 )
+//    {
+//        execvp(args[0], args);
+//        exit(2);
+//    }
+//
+//    //wait for child process to finish
+//    pid = wait(&status);
+//    printf("\nChild process %d exited with status %d\n",
+//            pid, (status >> 8)); 
+
+
 }
