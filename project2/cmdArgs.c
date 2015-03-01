@@ -534,30 +534,36 @@ void send_signal(char* args[])
     int pid;
     int status;
     int i;
-    char* cmd[10];
+    char* cmd[10] = {NULL};
     
     //set up the command for sending a signal
     //to a process using the kill command
     cmd[0] = "kill";
     cmd[1] = "-s";
 
+    //copy the rest of the arguments to cmd
     for(i = 1; args[i] != NULL; i++)
         cmd[i+1] = args[i];
 
-    for(i = 0; cmd[i] != NULL; i++)
-        printf("%s\n", cmd[i]);
+    //child process calls kill command to send signal
+    if( fork() == 0 )
+    {
+        execvp(cmd[0], cmd);
+        exit(2);
+    }
 
-//    //child process
-//    if( fork() == 0 )
-//    {
-//        execvp(args[0], args);
-//        exit(2);
-//    }
-//
-//    //wait for child process to finish
-//    pid = wait(&status);
-//    printf("\nChild process %d exited with status %d\n",
-//            pid, (status >> 8)); 
+    //wait for child process to finish
+    pid = wait(&status);
 
+    //pass on the status
+    exit(status >> 8);
+}
 
+void sig_handler(int signo)
+{
+    switch(signo)
+    case 1:
+        printf("received SIGHUP signal");
+        break;
+    case 2:
 }

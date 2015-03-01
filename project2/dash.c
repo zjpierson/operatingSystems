@@ -14,7 +14,12 @@ int main()
     int childpid;
     int waitpid;
     int status;
- 
+
+    //catch and handle all signals
+    for(i = 1; i < 32; i++)
+        if( signal(i, sig_handler) == SIG_ERR)
+            printf("can't catch signal %d\n", i);
+    
     //Enter command loop (Read Eval Print Loop)
     while(1)
     {

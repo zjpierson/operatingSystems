@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>     //strtok(), strcpy()
 #include <stdlib.h>     //exit
+#include <signal.h>     //signal(), SIG vars
 #include <dirent.h>     //DIR, opendir(), readdir(), closedir()
 #include <sys/time.h>       //getrusgae()
 #include <sys/resource.h>   //getrusgae()
@@ -34,6 +35,7 @@ void redirected_output(char *args[], char* fileName);
 void do_pipe(char* args[], int index);
 void send_signal(char* args[]);
 void call(char *args[]);
+void sig_handler(int signo);
 int tokenize(char* input, char* args[]);
 
 #endif
