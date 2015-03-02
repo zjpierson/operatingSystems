@@ -1,8 +1,51 @@
-//--------------    dash.c    ------------//
+/******************************    dash.c    **********************************
+ * Date: 2/27/2015
+ *
+ * Author:
+ *      Zachary Pierson
+ *
+ * Insittution:
+ *      South Dakota School of Mines and Technology
+ *
+ * Course:
+ *      CSC 456 Operating Systems
+ *
+ * Proffessor:
+ *      Dr. Karlson
+ *
+ * Description:
+ *      Dash is a program that is very similar to the Bash shell. A prompt is
+ * displayed and takes user input. Then the appropriate function is called 
+ * using system system functions. dash handles errors gracefully by providing
+ * the user with error messages. Any signal, except for SIGSTOP and SIGKILL
+ * will be caught and a message of what type of signal will be returned.
+ *
+ *      This is the second program in OS that demonstrates multiple processes
+ * using the fork() call. It also goes over file descriptors to help with 
+ * pipes and redirected input/output.
+ *
+ *
+ * ***************************************************************************/
 
 #include "cmdArgs.h"
 
 
+/******************************************************************************
+ *  Function:       main
+ *
+ *  Description:
+ *      As the starting point of dash, the main function takes 
+ *  care of the command prompt and tokenizing the users input. The first loop
+ *  goes though all the signals and sets up the sig_hangler function with them
+ *  so that they can be caught. In the parent process. A check for pipes and
+ *  redirects in the user input is done next so that they may take effect. 
+ *  Finally, a child process executes the proper command while the parent 
+ *  waits for it's child. Finally a status is printed after a comand has been
+ *  called.
+ *
+ *  Return 0:   program exited normally
+ *
+ * ***************************************************************************/
 int main()
 {
     char input[100] = {0};
@@ -68,6 +111,7 @@ int main()
         if( (status>>8) == (unsigned char)-1 )
             exit(0);
 
+        //This was provided by Dr. Karlson
         printf("\nChild process %d exited with status %d\n",
                 waitpid, (status >> 8)); 
 

@@ -1,4 +1,5 @@
-//--------------    cmdArgs.c    ------------//
+/******************************    cmdArgs.c    *********************************/
+
 #include "cmdArgs.h"
 
 
@@ -10,6 +11,15 @@ const char commands[NUM_CMDS][LEN_CMD] =
     "cd", "signal"
 };
 
+/******************************************************************************
+ *  Function:       quit
+ *
+ *  Description:
+ *      exits the current process with status -1
+ *
+ *  Param[in]:  args - Not used
+ *
+ * ***************************************************************************/
 void quit(char* args[])
 {
     printf("Now exiting...\n");
@@ -17,6 +27,17 @@ void quit(char* args[])
 }
 
 
+/******************************************************************************
+ *  Function:       cmdnm
+ *
+ *  Description:
+ *      Finds all the cmd names of the processes using the proc file system
+ * if no arguments specifyed. if a process id is provided, find all cmd 
+ * names of the processes that match any substring.
+ * 
+ *  Param[in]:  args - list of tokenized arguments
+ *
+ * ***************************************************************************/
 void cmdnm(char* args[])
 {
     char path[50] = {"/proc/"};
@@ -52,8 +73,16 @@ void cmdnm(char* args[])
     fclose(fp);
 }
 
-//finding all sub directories using dirent.h should be given credit to:
-//http://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
+/******************************************************************************
+ *  Function:       dispaly_cmdNames
+ *
+ *  Description:
+ *      Finds all sub directories using dirent.h. Credit should be given to:
+ * http://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
+ *
+ *  Param[in]:  args - list of tokenized arguments
+ *
+ * ***************************************************************************/
 void display_cmdNames()
 {
     DIR * dir;
@@ -108,11 +137,19 @@ void display_cmdNames()
     closedir(dir);
 }
 
-//loop though all pid directories and return pid numbers that match 
-//any substring of the given command
-//finding all sub directories using dirent.h should be given credit to:
-//http://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
-//
+/******************************************************************************
+ *  Function:       pid
+ *
+ *  Description:
+ *      Loop though all pid directories and return pid numbers that match any
+ * substring of the given command. If no argument is specigyed, then all 
+ * process id's will be dispalyed using file names in the proc directory.
+ * credit should again be given to:
+ * http://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
+ *
+ *  Param[in]:  args - list of tokenized arguments
+ *
+ * ***************************************************************************/
 void pid(char* args[])
 {
     DIR * dir;
@@ -178,8 +215,17 @@ void pid(char* args[])
     closedir(dir);
 }
 
-//finding all sub directories using dirent.h should be given credit to:
-//http://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
+/******************************************************************************
+ *  Function:       display_pid
+ *
+ *  Description:
+ *      Find all sub directories using dirent.h.
+ * credit should again be given to:
+ * http://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
+ *
+ *  Param[in]:  args - list of tokenized arguments
+ *
+ * ***************************************************************************/
 void display_pid()
 {
     int count = 1;
@@ -213,14 +259,23 @@ void display_pid()
     closedir(dir);
 }
 
-//Print to stdout:
-//  Linux Version information
-//  System uptime
-//memory usage information:
-//  memtotal
-//  memfree
-//CPU information:
-//  vendor id though cache size
+/******************************************************************************
+ *  Function:       systat
+ *
+ *  Description:
+ *      systat prints the following process information:
+ *
+ *   Linux Version information
+ *   System uptime
+ * memory usage information:
+ *   memtotal
+ *   memfree
+ * CPU information:
+ *   vendor id though cache size
+ *
+ *  Param[in]:  args - list of tokenized arguments
+ *
+ * ***************************************************************************/
 void systat(char* args[])
 {
     char linuxVersion[30] = {"/proc/version"};
@@ -306,17 +361,17 @@ void systat(char* args[])
 
     //close file
     fclose(fp);
-
-
-
-//    //the command name is the first thing inside the comm file
-//    fscanf(fp, "%s", cmdname);
-//    //print the command name that belongs to <pid>
-//    printf("%s", cmdname);
-//
-//    fclose(fp);
 }
 
+/******************************************************************************
+ *  Function:       help
+ *
+ *  Description:
+ *      prints usage information.
+ *
+ *  Param[in]:  args - list of tokenized arguments (Not used)
+ *
+ * ***************************************************************************/
 void help(char* args[])
 {
     printf("Usage Options:");
@@ -325,6 +380,14 @@ void help(char* args[])
     printf("\n\tsystat\t\t - print process information\n");
 }
 
+/******************************************************************************
+ *  Function:       proc_status
+ *
+ *  Description:
+ *      Makes a call to getrusage() and displays the following information:
+ * User time, System time, Page Faults (hard and soft), and Swaps.
+ * 
+ * ***************************************************************************/
 void proc_status()
 {
     struct rusage usage;
@@ -341,6 +404,15 @@ void proc_status()
 
 }
 
+/******************************************************************************
+ *  Function:       cd
+ *
+ *  Description:
+ *      Changes the current working directory.
+ * 
+ *  Param[in]:  args - list of tokenized arguments 
+ *
+ * ***************************************************************************/
 void cd(char* args[])
 {
     //if unsuccessful, print error and return 
@@ -348,6 +420,19 @@ void cd(char* args[])
         printf("Error cd: %s- No such file or directory", args[1]);
 }
 
+/******************************************************************************
+ *  Function:       redierect_pipe
+ *
+ *  Description:
+ *      This function checks all tokenized arguments for a '|' or '<' or '>'
+ * If one of these symbols is found, then a call to the appropriate function
+ * shall be made and a return status of 0 will be returned on success.
+ * 
+ *  Param[in]:  args - list of tokenized arguments
+ *  Return: 0 - pipe or redirect was found and succesfully executed
+ *  Return: 1 - did not find a pipe or redirect
+ *
+ * ***************************************************************************/
 int redirect_pipe(char* args[])
 {
     int i;
@@ -386,6 +471,20 @@ int redirect_pipe(char* args[])
     return 1;
 }
 
+/******************************************************************************
+ *  Function:       redirected_output
+ *
+ *  Description:
+ *      This function creates an output file where the output of the previos
+ * command should be put. This is done by loading the file descripter of the
+ * newly created file into position 1 using dup2. this will automatically 
+ * close stdout and replace it with the current file discriptor. After that,
+ * the call to the appropriate function can be made.
+ * 
+ *  Param[in]:  args - list of tokenized arguments
+ *  Param[in]:  fileName - redirected output file name
+ *
+ * ***************************************************************************/
 void redirected_output(char *args[], char* fileName)
 {
     int fd;
@@ -412,6 +511,20 @@ void redirected_output(char *args[], char* fileName)
 
 }
 
+/******************************************************************************
+ *  Function:       redirected_input
+ *
+ *  Description:
+ *      This function opens an input file where the contents shall be used
+ * as arguments to the previous command. This is done by loading the file 
+ * descripter of the opend file into position 0 using dup2. this will 
+ * automatically close stdin and replace it with the current file discriptor.
+ * After that, the call to the appropriate function can be made.
+ * 
+ *  Param[in]:  args - list of tokenized arguments
+ *  Param[in]:  fileName - redirected input file name
+ *
+ * ***************************************************************************/
 void redirected_input(char *args[], char* fileName)
 {
     int fd;
@@ -438,6 +551,22 @@ void redirected_input(char *args[], char* fileName)
 
 }
 
+/******************************************************************************
+ *  Function:       do_pipe
+ *
+ *  Description:
+ *      This function redirects the output of one command to the input of
+ * another. The grandchild is used to redirect the input of the second
+ * comand while it's parent is used to redirect the output of the first
+ * comand.
+ *
+ * @ Todo: make function capable of using multiple pipes e.g.
+ *          cmd | cmd | cmd
+ * 
+ *  Param[in]:  args - list of tokenized arguments
+ *  Param[in]:  index - position of '|' in args
+ *
+ * ***************************************************************************/
 void do_pipe(char* args[], int index)
 {
     int fd[2];
@@ -475,6 +604,20 @@ void do_pipe(char* args[], int index)
 }
 
 
+/******************************************************************************
+ *  Function:       call
+ *
+ *  Description:
+ *      In the first version of this program, this same structure was directly
+ * used in main. This code migrated to a function because now it acts as a
+ * wrapper for the exec system call which included user defined functions.
+ * A loop first checks to see if the comand could be found in the user
+ * defined functions; if found, then the appropriate function will be called
+ * using function pointers.
+ * 
+ *  Param[in]:  args - list of tokenized arguments
+ *
+ * ***************************************************************************/
 void call(char *args[])
 {
     int i;
@@ -503,6 +646,19 @@ void call(char *args[])
 }
 
 
+/******************************************************************************
+ *  Function:       tokenize
+ *
+ *  Description:
+ *      This function takes user input as a string and tokenizes the commands
+ * based on white space.
+ * 
+ *  Param[in]:  input - sring of user input
+ *  Param[out]:  args - an arrary of strings to store the tokenized arguements
+ *  Return -1:  no arguments specifyed
+ *  Return n:   number of arguments from the command line
+ *
+ * ***************************************************************************/
 int tokenize(char* input, char* args[])
 {
     int numArgs = 0;
@@ -519,15 +675,23 @@ int tokenize(char* input, char* args[])
         numArgs++;
     }
 
+    //set the next argument to NULL
     args[numArgs] = NULL;
-
-//    printf("the arguments are: \n");
-//    for( i = 0; i < numArgs; i++ )
-//        printf("%s ", args[i]);
 
     return numArgs;
 }
 
+/******************************************************************************
+ *  Function:       send_signal
+ *
+ *  Description:
+ *      send signal is a wrapper function for the system kill command.
+ * it calls execvp with the proper arguments to the kill function. cmd is
+ * used to hold the command that will be executed by the execvp call.
+ * 
+ *  Param[in]:  args - list of tokenized arguments
+ *
+ * ***************************************************************************/
 //send signal is a wrapper function for the system kill command
 void send_signal(char* args[])
 {
@@ -559,11 +723,27 @@ void send_signal(char* args[])
     exit(status >> 8);
 }
 
+/******************************************************************************
+ *  Function:       sig_handler
+ *
+ *  Description:
+ *      This function will be called when a signal is sent to dash. it can 
+ * catch all signals except for the SIGKILL(9) and SIGSTOP(19) signals. 
+ * when a signal is received, dash will display what signal was received.
+ * 
+ *  Param[in]:  signo - signal number 
+ *
+ * ***************************************************************************/
+//Not complete: need to include all the signal numbers
 void sig_handler(int signo)
 {
     switch(signo)
+    {
     case 1:
         printf("received SIGHUP signal");
         break;
     case 2:
+        printf("received 2 signal");
+        break;
+    }
 }
