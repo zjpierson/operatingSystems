@@ -388,6 +388,11 @@ void help(char* args[])
  * User time, System time, Page Faults (hard and soft), and Swaps.
  * 
  * ***************************************************************************/
+/***********************************************************************
+* Code listing from "Advanced Linux Programming," by CodeSourcery LLC  *
+* Copyright (C) 2001 by New Riders Publishing                          *
+* See COPYRIGHT for license information.                               *
+***********************************************************************/
 void proc_status()
 {
     struct rusage usage;
@@ -421,7 +426,7 @@ void cd(char* args[])
 }
 
 /******************************************************************************
- *  Function:       redierect_pipe
+ *  Function:       redirect_pipe
  *
  *  Description:
  *      This function checks all tokenized arguments for a '|' or '<' or '>'
@@ -729,7 +734,7 @@ void send_signal(char* args[])
  *  Description:
  *      This function will be called when a signal is sent to dash. it can 
  * catch all signals except for the SIGKILL(9) and SIGSTOP(19) signals. 
- * when a signal is received, dash will display what signal was received.
+ * when a signal is received, dash will display that signal number.
  * 
  *  Param[in]:  signo - signal number 
  *
@@ -737,13 +742,5 @@ void send_signal(char* args[])
 //Not complete: need to include all the signal numbers
 void sig_handler(int signo)
 {
-    switch(signo)
-    {
-    case 1:
-        printf("received SIGHUP signal");
-        break;
-    case 2:
-        printf("received 2 signal");
-        break;
-    }
+    printf("\nsignal received: %d\n", signo);
 }
